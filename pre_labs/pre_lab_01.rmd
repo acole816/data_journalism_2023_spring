@@ -134,7 +134,7 @@ umd_courses %>%
 
 Describe what you think each line of this code is doing below, based on the result:
 
-**Answer** Line 128 is use the umd_course data frame, Line 129 is saying group by each term, Line 130 is saying to summarize the data frame into one value , Line 131 says to create a column named "count classes" and to add up all the classes within a given term.  
+**Answer** Line 128 is use the umd_course dataframe, Line 129 is saying group by each term, Line 130 is saying to summarize the data frame into one value , Line 131 says to create a column named "count classes" and to add up all the classes within a given term.  
 
 ### Task 10: Adding arrange to sort the data
 
@@ -184,7 +184,7 @@ umd_courses %>%
 ```
 
 Compared to the previous codeblock, what has changed and how did that affect the result? 
-**Answer**
+**Answer** Now we are seeing the term, the number of classes in that term, and are sorting in descending order by the total seats, which displays the terms with the greatest amount of total seats first. 
 
 ### Task 13: different kinds of summarizations
 
@@ -203,7 +203,7 @@ umd_courses %>%
 ```
 
 Compared to the previous codeblock, what has changed and how did that affect the result? What do the top terms have in common? 
-**Answer**
+**Answer** Mean number of seats and median number of seats have now been added, but we are still sorting by total setas in descending order. 
 
 ### Task 14: more aggregations
 
@@ -225,16 +225,18 @@ umd_courses %>%
 
 Compared to the previous codeblock, what has changed and how did that affect the result? How is the data sorted?
 
-**Answer**
+**Answer** Now instead of grouping by term, we are grouping by department. Additionally, we've now added two new columns, minimum and maximum number of seats.   
 
 ### Task 12: Questions
+
+Task 15? Nice trick question.
 
 No code here; I want you to provide three questions that this data suggests to you. What would you like to ask it?
 
 **Answer**
 
-1.  
+1.  What departments are trending upward, based on number of total classes or seats from previous years? Which of them are trending downward?
 
-2.  
+2.  Which departments have the biggest and smallest students to total classes ratio? 
 
-3.  
+3.  Classes listed as NA description, NA teacher and 0 seats just never took place...? Why are these included in the data set? Could we remove these data points? Will they effect conclusions we make when asking other questions about the dataframe?
