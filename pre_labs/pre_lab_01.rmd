@@ -150,7 +150,7 @@ umd_courses %>%
 ```
 
 Compared to the previous codeblock, what has changed and how did that affect the result? 
-**Answer**
+**Answer** Now, we have another "and then..." and a final line is ordering the 'count_classes' column we created in descending order, showing the term with the greatest number of classes first, descending downwards. 
 
 ### Task 11: Grouping by multiple columns
 
@@ -167,7 +167,7 @@ umd_courses %>%
 
 Compared to the previous codeblock, how did the output change and what in the code changed it?
 
-**Answer**
+**Answer** Now we are grouping by term and department, counting how many classes are in a given department for a certain semester.
 
 ### Task 12: Other summary functions
 
