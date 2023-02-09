@@ -36,6 +36,12 @@ We're going to load the UMD courses data.
 ```{r}
 umd_courses <- read_rds("lab_01.rds")
 ```
+```{r}
+spring2018_umd_courses <- read_rds("lab_01.rds")
+```
+```{r}
+spring2020_umd_courses <- read_rds("lab_01.rds")
+```
 
 ## Answer questions
 
@@ -88,8 +94,14 @@ Also, I wish I knew how to show deparments on the chart but not have the compute
 **Q5** Take one of the questions you listed in the final question of the pre_lab and try to answer it here in code. If you don't know how to fully answer it, write what code you can and describe in words what else you would need to do. If you got an answer, is it interesting?
 **A5** Writing this before I start, I am going to attempt to try and figure out a way to show which deparments are upward or downward trending based on number of classes available comparing recent years to older years.
 
+Although I wasn't able to answer the questions, I wrote two code blocks to show the deparments with the most classes in spring of 2018 and spring of 2020. I chose two spring semesters as I thought that would be the best way to compare, as using a winter and a spring semester for comparison would not be correct as there is clerly more classes offered in the spring vs winter.
+
+The problem I ran into is I want to be able to take the classes from spring of 2020 for each deparment and subtracting it from the number of classes offered from that department in spring of 2018. For example, Business and Management has actually seen a drop in classes in 2020 compared to 2018. The equation would be 154 - 168 = -14, indicating the Business and Managment department offered 14 less classes in 2020 spring then in 2018 spring.
+
+Departments that had the highest number would be shwoing an upward trend, whereas departments with low/negative numbers would show a trend. I tried to solve this by creating multiple dataset ids, but I am still unsure how to take the two and subtract them into another dataset. 
+
 ```{r}
-umd_courses %>%
+spring2020_umd_courses %>%
   filter(term == 202001) %>%
   group_by(department) %>%
   summarise(
@@ -99,7 +111,7 @@ umd_courses %>%
 ```
 
 ```{r}
-umd_courses %>%
+spring2018_umd_courses %>%
   filter(term == 201801) %>%
   group_by(department) %>%
   summarise(
@@ -107,4 +119,5 @@ umd_courses %>%
   ) %>%
   arrange(desc(count_classes))
 ```
+
 
