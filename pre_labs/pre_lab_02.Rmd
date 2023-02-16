@@ -303,6 +303,7 @@ standardized_maryland_expenses <- maryland_expenses %>%
   mutate(
     payee_upper = str_to_upper(payee_name)
 )
+standardized_maryland_expenses
 ```
 
 **Task** Search the Internet for tidyverse functions similar to str_to_upper. Name at least two and describe what they do. If you use ChatGPT for this, include the question you submitted.
@@ -333,7 +334,7 @@ Mutate is even more useful when combined with some additional functions. Let's k
 
 **Task** Run the following code and look at the output. Then write a sentence or two describing what you think the mutate statement is doing step by step.
 
-**Answer**
+**Answer** The mutate function is looking at the address column and extracting state it finds then prinitng that state out as its abbreviation in a seperate column.
 
 ```{r}
 maryland_expenses_with_state <- maryland_expenses %>%
@@ -369,7 +370,7 @@ maryland_expenses_with_state %>%
 
 Does this answer make sense to you? Why or why not?
 
-**Answer**
+**Answer** I guess? It makes sense that the most money was spent in Maryland for state of Maryland campaigns, but I don't understand why so much money was spent in other states. Why is almost 2 million dollars being spent in VA? Maybe I am misinterpreting the data.
 
 Mutate is there to make your data more useful and to make it easier for you to ask more and better questions of it.
 
@@ -379,8 +380,8 @@ Now that you have seen how to use mutate, filtering and dates, give me three que
 
 **Answer**
 
-1. 
+1. From question 15, I'm curious why so much money is being spent in VA for MD elections, I want to know where the money in VA is being spent. What are the most expensive and most frequent purchases in VA?
 
-2.  
+2.  What campaigns recieved the most money and from who?
 
-3.  
+3.  This may be a dumb question, but will the average of the percentage votes moore won in each county equal the percent he won of the total vote?
