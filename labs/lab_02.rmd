@@ -75,10 +75,20 @@ umd_courses %>%
 **A4.**
 
 ```{r}
+maryland_expenses_with_date <- maryland_expenses %>% mutate(expenditure_date=mdy(expenditure_date))
+
+maryland_expenses_with_date %>%
+  mutate(month = floor_date(expenditure_date, "month")) %>%
+  filter(committee_name == "Moore  Wes For Maryland") %>%
+  group_by(month) %>%
+  summarise(total_amount = sum(amount)) %>%
+  arrange(desc(total_amount))
 ```
 
 **Q5.** Choose your own adventure: using either the UMD courses or campaign expenses data, ask and answer a question that is different than the previous ones. You can use one of the ones you provided in the pre_lab.
-**A5.** 
+**A5.** What campaigns recieved the most money and from who?
 
 ```{r}
+maryland_expenses
+
 ```
