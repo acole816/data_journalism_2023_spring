@@ -34,15 +34,38 @@ maryland_expenses <- read_csv("data/maryland_expenses.csv")
 
 **Q1** Create a new column that divides the expense amounts into the following categories - \$0-\$500, \$500-\$5000, \$5001-\$50000, \$50001\_\$100000, \$100001-\$500000 - giving each an appropriate text value, and count how many expenses are in each group. How would you describe the distribution of expenses in a sentence? Would you change the categories?
 
-**A1.**
+**A1.** The vast majority of donations are $500 or less, contributing to nearly 75% of the total amount of donations.
 
 ```{r}
+maryland_expenses_with_amount_ranges <- maryland_expenses %>% 
+  mutate(
+    amount_range = case_when(
+    
+      amount < 500.01 ~ "0-500",
+      amount > 499.99 & amount < 5000.01 ~ "501-5000",
+      amount > 5000.99 & amount < 50000.01 ~ "5001-50000",
+      amount > 50000.99 & amount < 100000.01 ~ "50001-100000",
+      amount > 100000.99 & amount < 500000.01 ~ "100001-500000",
+      amount > 500000 ~ "500000+"
+  )
+  )
+
+maryland_expenses_with_amount_ranges %>%
+  group_by(amount_range) %>%
+  count()
 ```
 
 **Q2.** How many departments have offered the courses with "Climate" in the title and at least one seat? Which department has offered the most? 
-**A2.** 
+**A2.** 27 different departments have offered at least one 
 
 ```{r}
+umd_courses %>% 
+  filter(str_detect(title, "Climate")) %>%
+  group_by(department) & seats > 0 %>%
+  summarise(
+    count_classes = n()
+  ) %>%
+  arrange(desc(count_classes))
 ```
 
 **Q3.** Of the departments listed in A2, which one is the most interesting to you, and why?
