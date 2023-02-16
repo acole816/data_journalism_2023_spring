@@ -86,9 +86,12 @@ maryland_expenses_with_date %>%
 ```
 
 **Q5.** Choose your own adventure: using either the UMD courses or campaign expenses data, ask and answer a question that is different than the previous ones. You can use one of the ones you provided in the pre_lab.
-**A5.** What campaigns recieved the most money and from who?
+**A5.** What campaigns recieved the most money? This is the only question I had time to answer sorry it is so elementary but the Wes Moore campaign received the most total amount of donations by almost 5 million dollars.
 
 ```{r}
-maryland_expenses
-
+maryland_expenses %>%
+  group_by(committee_name) %>%
+  summarise(total_amount = sum(amount)) %>%
+  arrange(desc(total_amount))
 ```
+
