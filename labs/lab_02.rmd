@@ -52,7 +52,10 @@ maryland_expenses_with_amount_ranges <- maryland_expenses %>%
 
 maryland_expenses_with_amount_ranges %>%
   group_by(amount_range) %>%
-  count()
+  summarise(
+    total = n()
+  ) %>%
+  arrange(desc(total))
 ```
 
 **Q2.** How many departments have offered the courses with "Climate" in the title and at least one seat? Which department has offered the most? 
