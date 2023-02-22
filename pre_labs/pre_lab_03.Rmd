@@ -238,7 +238,7 @@ We're going to write code that tells R to make a new column for our zips, keepin
 
 **Task** Run the following codeblock to use str_sub() to convert the ZIP codes that have nine digits to five digits, creating a new column. Look at the difference in the result - what changed? 
 
-**Answer**
+**Answer** There is now a new column that shows the first 5 digits of every Zip Code called 'Zip5'. 
 
 ```{r}
 # cleaning function
@@ -303,6 +303,15 @@ cleaned_md_grants_loans
 
 **Task** Write and run code to answer our original question: which zip code has gotten the most amount of money from the Maryland Tourism Board?
 
-```{r}
+**Answer** Zip Code 21202 with $648,069
 
+```{r}
+cleaned_md_grants_loans %>%
+  filter(source == "COMMERCE/MARYLAND TOURISM BOARD") %>%
+  group_by(zip5) %>%
+  summarise(total_amount = sum(amount, na.rm = TRUE)) %>%
+  arrange(desc(total_amount)) %>%
+  head(1)
 ```
+
+
