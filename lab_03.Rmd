@@ -72,9 +72,16 @@ head(pg_schools_total_amount)
 ```
 Q3. You're interested in examining the vendors paid for capital projects at the University of Maryland. Search the payments data to find those payments, then write code to produce a list of each vendor and the total amount it received. Look carefully at that list - what cleaning will it require to ensure that you have only one row per vendor and zip code? Provide at least three examples of vendor names that are similar and should be combined into one. Describe how you might clean that data so that any nearly identical vendors would look identical - what would you change and how?
 
-A3.
+A3. One problem that initially jumps out to me is all the "CO.", "INC", "LLC" and "COMPANY" at the end of all the vendor names. There is probably the same company listed other places in the data frame with and without the "LLC" for example. One example of vendor names that should be combined into 1 is "WHITING TURNER CONTRACTING CO" and "WHITING TURNER CONTRACTING COMPANY". Another example is "PLANO-COUDON LLC" and "PLANO-CONDON, LLC". Finally, "VWR INTERNATIONAL LLC" and "VWR INTERNATIONAL INC" should be combined into 1. One simple fix that may work for most cases in this data frame is just looking at the first 8 characters in each vendor_name and matching companies accordingly, or dropping the last 4 or 5 characters from each vendor_name. Although I don't think this will combine vendors who shouldn't be, but I still don't think it will combine every company that should... Surely there is a better way... just what I though of from the zip code problem we worked on in the pre lab Tuesday. 
 
 ```{r}
+capital_umd_payments <- cleaned_payments %>%
+  filter(agency_name == "CAPITAL PROJECTS- UNIVERSITY OF MARYLAND") %>%
+  group_by(vendor_name) %>%
+  summarise(total_amount = sum(amount, na.rm = TRUE)) %>%
+  arrange(desc(total_amount))
+
+capital_umd_payments
 ```
 
 Q4: You want to understand how much state grant money went to stem cell research projects each fiscal year. Search the data to find grants that fit that description. Once you find which columns contain the information you want, your code should standardize the data needed to find just the grants for stem cell research in a single filter. Then create a total amount of money for each fiscal year. Write a sentence summarizing how stem cell research funding has changed over time.
