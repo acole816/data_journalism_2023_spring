@@ -89,4 +89,7 @@ Q4: You want to understand how much state grant money went to stem cell research
 A4:
 
 ```{r}
+stem_cell_grants <- cleaned_md_grants_loans %>%
+  filter(description == "Stem Cell Research Grant" | description == "Stem Cell Research Grant, Pre-Commercialization Research" | description == "STEM CELL RESEARCH GRANT")
+  
 ```
