@@ -45,19 +45,30 @@ cleaned_payments <- payments %>%
 
 Q1: You want to know how much money state agencies have paid to the Prince George's County School system, but to do that you'll need to find all of the variations of how the school system might be listed. Write code to find rows where the vendor name contains the county's school system, starting with a broad search and then narrowing it down. When you have found as many as possible, save the result to a new dataframe called `pg_schools`. How many records did you find?
 
-A1:
+A1: I used as many different variations as possible of the name I could think of after looking for different spellings in the data frame and came to a total amount of 35. I have a feeling this is way off as scrolling through the forst 200 or so rows of the database, I feel like I saw at least 15 to 20 that fit the description. Not sure what I am doing wrong but I feel as if there is an easier way to do this then typing in all these different variations and essentially guessing. No matter what your bound to miss a few doing it this way.
 
 ```{r}
-cleaned_payments %>%
-  filter(vendor_name == "BOARD OF EDUCATION OF PRINCE GEORGES COUNTY MD" | vendor_name == "PRINCE GEORGES COUNTY PUBLIC SCHOOL") %>%
-  summarise(total_amount = sum(amount, na.rm = TRUE))
+pg_schools <- cleaned_payments %>%
+  filter(vendor_name == "BOARD OF EDUCATION OF PRINCE GEORGES COUNTY MD" | vendor_name == "PRINCE GEORGES COUNTY PUBLIC SCHOOL" | vendor_name == "PRINCE GEORGES COUNTY PUBLIC SCHOOL SYSTEM" | vendor_name == "PRINCE GEORGE COUNTY PUBLIC SCHOOL" | vendor_name == "PRINCE GEORGE COUNTY PUBLIC SCHOOLS" | vendor_name == "PRINCE GEORGES COUNTY PUBLIC SCHOOLS" | vendor_name == "BOARD OF EDUCATION OF PRINCE GEORGE COUNTY MD" | vendor_name == "BOARD OF EDUCATIONS OF PRINCE GEORGES COUNTY MD" | vendor_name == "BOARD OF EDUCATION OF PRINCE GEORGES COUNTY MD") 
+  
+nrow(pg_schools)
 ```
 
 Q2: Using that `pg_schools` dataframe, write code to calculate the total amount of payments to the Prince George's County School system for each fiscal year. Which fiscal year had the largest total amount? What do you notice about the years listed?
 
-A2:
+A2: 2022 had the largest total amount. I find it interesting the top 2 are 2021 and 2022, and then the next 3 are 2008, 2009 and 2010. Why did spending seemingly decrease after 2010 and what changed after 2020?
 
 ```{r}
+pg_schools <- cleaned_payments %>%
+  filter(vendor_name == "BOARD OF EDUCATION OF PRINCE GEORGES COUNTY MD" | vendor_name == "PRINCE GEORGES COUNTY PUBLIC SCHOOL" | vendor_name == "PRINCE GEORGES COUNTY PUBLIC SCHOOL SYSTEM" | vendor_name == "PRINCE GEORGE COUNTY PUBLIC SCHOOL" | vendor_name == "PRINCE GEORGE COUNTY PUBLIC SCHOOLS" | vendor_name == "PRINCE GEORGES COUNTY PUBLIC SCHOOLS" | vendor_name == "BOARD OF EDUCATION OF PRINCE GEORGE COUNTY MD" | vendor_name == "BOARD OF EDUCATIONS OF PRINCE GEORGES COUNTY MD" | vendor_name == "BOARD OF EDUCATION OF PRINCE GEORGES COUNTY MD") 
+
+pg_schools_total_amount <- cleaned_payments %>%
+  filter(vendor_name == "BOARD OF EDUCATION OF PRINCE GEORGES COUNTY MD" | vendor_name == "PRINCE GEORGES COUNTY PUBLIC SCHOOL" | vendor_name == "PRINCE GEORGES COUNTY PUBLIC SCHOOL SYSTEM" | vendor_name == "PRINCE GEORGE COUNTY PUBLIC SCHOOL" | vendor_name == "PRINCE GEORGE COUNTY PUBLIC SCHOOLS" | vendor_name == "PRINCE GEORGES COUNTY PUBLIC SCHOOLS" | vendor_name == "BOARD OF EDUCATION OF PRINCE GEORGE COUNTY MD" | vendor_name == "BOARD OF EDUCATIONS OF PRINCE GEORGES COUNTY MD" | vendor_name == "BOARD OF EDUCATION OF PRINCE GEORGES COUNTY MD") %>%
+  group_by(fiscal_year) %>%
+  summarise(total_amount = sum(amount, na.rm = TRUE)) %>%
+  arrange(desc(total_amount))
+
+head(pg_schools_total_amount)
 ```
 Q3. You're interested in examining the vendors paid for capital projects at the University of Maryland. Search the payments data to find those payments, then write code to produce a list of each vendor and the total amount it received. Look carefully at that list - what cleaning will it require to ensure that you have only one row per vendor and zip code? Provide at least three examples of vendor names that are similar and should be combined into one. Describe how you might clean that data so that any nearly identical vendors would look identical - what would you change and how?
 
