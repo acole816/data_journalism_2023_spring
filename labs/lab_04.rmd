@@ -58,7 +58,7 @@ Then, when you are done standardizing `payee_clean`, export it as a new CSV file
 
 Then, using that `payee_clean` column, write code to find all of the spending where Facebook is the payee and calculate the total amount of spending for each committee and present the results showing the committee that spent the most first. Which committee is that?
 
-**A1.**
+**A1.** "Jain Ashwani Friends of" spent the most with $62,357.38 of total spending. 
 
 ```{r}
 maryland_expenses <- read_csv("data/maryland_expenses.csv")
@@ -68,33 +68,60 @@ media_expenses <- maryland_expenses %>%
 
 write_csv(media_expenses, "data/media_expenses.csv")
 
-cleaned_media_expenses <- read.csv("data/cleaned_media-expenses.csv")
+cleaned_media_expenses <- read.csv("data/cleaned_media-expenses.csv") %>%
+  filter(payee_clean == "FACEBOOK") %>%
+  group_by(committee_name) %>%
+  summarise(total_spending = sum(amount)) %>%
+  arrange(desc(total_spending))
+  
+cleaned_media_expenses
 ```
-
-```{r}
-
-```
-
 
 **Q2.** Let's do some research on the top committees from question 1. Look up the top 10 spenders: if they are candidate committees, what offices were they running for? If they were not candidates, what issues do they seem to care about? Write some sentences answering those questions, then go the Facebook ad library (https://www.facebook.com/ads/library/?active_status=all&ad_type=political_and_issue_ads&country=US&sort_data\[direction\]=desc&sort_data\[mode\]=relevancy_monthly_grouped&media_type=all) and look for ads from the top spender. What do you notice about those ads?
 
-**A2.** 
+**A2.** I am assuming since the question says top committees from question 1, that means we are using the cleaned_media_expenses data frame for this question, and not the original maryland_expenses. 
+
+The Top 10 exist entirely of people running for public office in Maryland. The positions of the people's committees were in the top 10 included: govenor, county executive, school board, county council and state delegate. A lot of the committees in the top 10 were fro younger, challenger candidates running on a change to the current "broken system". 
+
+The most striking thing about the ads from the "jainforgov" or "Friends of Ashwani Jain" campaign were that all the ads contained the same message underneath, "We took down this ad after it started running because the disclaimer doesn't follow our Advertising Standards." I'm not sure if this is a glitch, if this was standard after an election was over and ads stop running, or if something happened with their ads to make the outside of Meta's terms and services. After reviewing the ads, it doesn't appear that there was anything inapproaopriate about them or would make them in violation of Meta's policies. 
+
+Another interesting thing to note was the desparity in impression between ads. Some ads 6k-10k impressions and some had 40k-50k.
+
+
 
 **Q3.** Given the list of top spenders in A1 and the primary results for governor (https://elections.maryland.gov/elections/2022/primary_results/gen_results_2022_1.html), who is missing from that A1 list? Did those campaigns run Facebook ads, according to Facebook's ad library? Who are the biggest recipients of media expenses by the Democratic primary winner for governor (HINT: that person has two committees)?
 
-**A3.** 
+**A3.** I'm very confused because I can't find a second committee name for Wes Moore. Feel like I am missing something here. I also think the biggest two people missing from the answer to question 1 are the two winners of the primary for govenor.. Dan Cox and Wes Moore's campiagns. In fact, neither of them even show up in the dataframe for cleaned_media_expenses;, which means both winners of the goventorial primary didn't spend a dime on Facebook ads or I messed something up.
+
+When looking at Facebook ads using the link from question 2, I only find one Wes Moore ad and only 1 Dan Cox ad... Maybe this goes back to not knowing Moore's other committee name? MaybeI am overthinking and my answers are right! 
+
+For the last part of the question, grouping by payee_name shows us SKDK was the biggest receipient. I don't think this is right either but its my best effort. 
+
 
 ```{r}
+moore_media_expenses_payee <- media_expenses %>%
+  filter(committee_name == "Moore  Wes For Maryland") %>%
+  group_by(payee_name) %>%
+  summarise(total_spending = sum(amount)) %>%
+  arrange(desc(total_spending))
+
+moore_media_expenses_payee
 ```
 
 **Q4.** The media expense data you cleaned also has a standardized purpose column. Write code to generate a list of the committees with the total amount of spending on online advertising. How does this list compare to the one from Q1 about top Facebook spenders? Of the top 5 committees who spent the most on Facebook ads from Q1, are there any that appear to have spent *all* of their online advertising dollars on Facebook?
 
-**A4.** 
+**A4.** This list has completley different names in the top 10, including Republican primary govenatorial winner Dan Cox's campaign. 
 
 ```{r}
+online_advertising_expenses <- media_expenses %>%
+  filter(expense_purpose == "Online Advertising") %>%
+  group_by(committee_name) %>%
+  summarise(total_spending = sum(amount)) %>%
+  arrange(desc(total_spending))
 
+online_advertising_expenses
 ```
 
 **Q5** You've been asked to summarize your findings about spending on Facebook by Maryland political candidates. How much do we know and what don't we know? What's the best story idea you've found here?
 
-**A5**
+**A5** If my answers from question three are true, I think a big story from this would be both Democratic and Republican governatorial primary winners didn't spend a dime on Facebook ads... Otherwsie, in the top say,, 25 spenders, I would be curious to see what percentage won their campaigns. Additionally, I think another story idea could be looking at all the 'matchups' in each election and see what percentage of time the person who spent the most on online advertising or Facebook ads won the election. 
