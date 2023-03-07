@@ -54,6 +54,7 @@ You can now export that extracted table to a CSV file using the "Export" button.
 ```{r}
 voters_by_county <- read_csv("tabula-Eligible Active Voters by County - GP22.csv") %>% clean_names()
 View(voters_by_county)
+voters_by_county <- voters_by_county %>% slice(-25)
 ```
 
 Boom - we're good to go.
@@ -114,7 +115,7 @@ The good news is that we have data we don't have to retype. The bad news is, we 
 ### Task 6: Load the data without headers
 
 **Task** Load the data without headers by running the codeblock below. What problems remain? 
-**Answer**
+**Answer**  There still isn't proper column names for the data frame. The column names are now showing as "x2", "x3", "x4", etc, which doesn't help us to understand the data we are looking at.
 
 ```{r}
 fentanyl_deaths <- read_csv("tabula-Annual_2020_Drug_Intox_Report.csv", col_names = FALSE) %>% clean_names()
@@ -127,7 +128,7 @@ Ok, now we have all the data. But we need actual headers. Let's add those using 
 ### Task 7: Change the headers to real names
 
 **Task** Run the codeblock below. What else do we need to do?
-**Answer**
+**Answer** We still have the "......." after all the county names, which is going to mess up our filtering for specific questions. The codeblock for task 8 fixes this issue.  
 
 ```{r}
 fentanyl_deaths <- read_csv("tabula-Annual_2020_Drug_Intox_Report.csv", col_names = FALSE) %>% 
