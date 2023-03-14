@@ -54,7 +54,7 @@ View(county_voters_combined)
 ### Task 4: Asking a question
 
 **Task** Run the following code to filter on Frederick County's registration data and look at the results. What stands out to you about the changes in party registration over time?
-**Answer** 
+**Answer** A few things that stand out: The Democratic Party registration gain was much greater from 2016 to 2022 compared to the Republican Party. I also find it interesting that there was an over 400 person drop in Libertarian Party registered voters from 2018 to 2020; maybe this has to do with 2020 being an election year and people wanted to be able to vote in one of the two major primaries. 
 
 ```{r}
 county_voters_combined %>% filter(COUNTY == 'Frederick')
@@ -88,6 +88,7 @@ maryland_population %>% left_join(county_voters_2022, by="COUNTY") %>% nrow()
 ```{r}
 # without nrow
 maryland_population %>% left_join(county_voters_2022, by="COUNTY")
+# can say by=c("COLUMN NAME FROM MARYLAND_POPULATION"="COLUMN NAME FROM COUNTY_VOTERS_2022) or just use clean names/str_to_upper
 ```
 
 ### Task 8: Assign Joined Data to New Dataframe
