@@ -1,0 +1,151 @@
+---
+title: "lab_08"
+author: "derek willis"
+date: "2023-04-03"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load libraries and establish settings
+
+**Task** Create a codeblock and load appropriate packages and settings for this lab. We'll be making some charts, working with dates and retrieving Census data.
+
+```{r}
+library(tidyverse)
+library(lubridate)
+library(tidycensus)
+```
+
+
+## Load and modify data
+
+**Task** Create a codeblock and load the following data from the data folder:
+
+* Prince George's County 911 Overdose Calls
+
+You will need to create columns for the date, week and month based on the existing `datetime` column.
+
+```{r}
+pg_county <- read_csv("data/prince_georges_2022_overdoses.csv") %>%
+  mutate(month = month(datetime, label=TRUE)) %>%
+  mutate(week = week(datetime)) %>%
+  mutate(time = format(datetime, format="%H:%M:%S"))
+```
+
+```{r}
+pg_county_per_week <- pg_county %>%
+  group_by(week) %>%
+  summarize(total_calls = n())
+
+pg_county_per_week
+```
+
+
+^I had to use chatgpt to get the time column. The question I asked was : "I have a column called 'datetime' that has values like this: 2022-01-01 02:01:00   I need to make a seprate column that extracts the time from that column." The format portion of this answer would have taken my significantly longer to get on my own, as I don't remeber doing the "%H:%M:%S" thing before. 
+
+## Questions 
+
+**Q1.** Which month saw the greatest percentage of total calls? Create a dataframe that calculates the percentage of all calls that each month's calls represents. Make a bar chart from that dataframe. Your bar chart must have:
+
+* A clear title that states the main idea/finding
+* Good labels for the x & y axis and a caption for the source, which is Prince George's County EMS.
+* Readable bars - the values shouldn't be overlapping
+
+Compare the results here to those from the pre_lab_08 bar chart - are there major differences in the months with the highest and lowest figures? Describe that below.
+
+**A1.** In the pre_lab, Febuary was the month with the least amount of calls (which logically makes sense because it has the least amount of days), however in this lab, January is the month with the least amount of calls, then Febuary in second. January was listed 4th least in the pre_lab. Most surprisingly, December had the second least amount of calls from the data in the pre_lab, however is the month with the MOST calls in this data, contributing to over 10% of the total calls across all months.  
+
+```{r}
+pg_county %>%
+  group_by(month) %>%
+  summarize(total_calls = n()) %>%
+  mutate(percent_calls = total_calls / sum(total_calls)*100) %>%
+  ggplot() +
+  geom_bar(aes(x=reorder(month, total_calls), weight=total_calls)) +
+  labs(x="Month", y="Total Calls", title="December had the most Overdose Calls of any Month in PG County", caption = "Prince George's County EMS")
+```
+
+
+
+**Q2.** Let's visualize this data on a weekly basis using a line chart. As in Q1, generate a dataframe with the total number of calls for each week, and then create a line chart to show the distribution of calls over time. Your line chart must have:
+
+* A clear title that states the main idea/finding
+* Good labels for the x & y axis and a caption for the source, which is Prince George's County EMS.
+* Readable labels
+
+Describe the pattern of results; you may want to look at the data to dig into particular outliers.
+
+**A2.** The data is pretty even, of course calls from one week to the next our going to fluctuate a little. The big spike in the middle of the data is from the 28th week of the year, which is sometime in the beginning the middle of July. The big drop off at the end of the graph is because the 365 isn't perfectly divisable into 7, so the "53rd" week is comprised of just a few days. 
+
+If anything, it seems that calls may have slighly increased as the year went on, as when we look at the first 10 weeks, there are clarly less calls per week then the last 10 weeks of the year. 
+
+
+```{r}
+pg_county_per_week %>%
+  ggplot() +
+  geom_line(aes(x=week, y=total_calls)) +
+  labs(x="Week", y="Total Calls", title="Drug Overdose Calls Continue to Increase Throughout the Year", caption ="Prince George's County EMS")
+```
+
+**Q3.**  A scatterplot is a type of chart that helps us see relationships between two variables. One variable goes on the x axis, the other on the y axis.  For each row/observation in our data, a scatterplot puts a circle (or a "point") where the two variables intersect on a grid. 
+
+Statisticians use scatterplots to show graphically whether one variable is correlated -- related, in a statistical sense -- with another variable.  A classic example is the [relationship between ice cream sales and temperature](https://www.mathsisfun.com/data/scatter-xy-plots.html). The scatterplot below -- press play to load the image -- shows that relationship, that an increase in temperature is associated with an increase in ice cream sales. When it's 12C, sales are 200 dollars, and when it's hotter, 25C, sales are 600 dollars.
+
+```{r}
+knitr::include_graphics("https://www.mathsisfun.com/data/images/scatter-ice-cream1.svg")
+```
+
+We're going to use a scatterplot a little differently, to get a visual sense of two key variables: 
+
+Our question is: does the median income in a zip code have any relationship to the number of overdose 911 calls in that zip code?
+
+To answer this question, do the following:
+
+1. Generate a dataframe with the number of 911 calls for each zip code.
+2. Get data from the Census Bureau showing median household income for Maryland zip codes.
+3. Join those two dataframes on their zip code columns, starting with the 911 calls dataframe.
+4. Make a scatterplot showing the total calls and median income. I didn't show you how to do this, so look it up! Googling "ggplot scatterplot" is a good start.
+5. Give it an appropriate title, source, and x and y axis titles.
+6. Add a label for each point that shows the zip code using geom_text() - see some examples of its use at https://ggplot2.tidyverse.org/reference/geom_text.html#ref-examples. Try to make the names as easy to read as possible by avoiding overlap.
+7. In the answer space below, describe what you see and answer the questions posed above. In a general sense, what do you think this means? Feel free to consider the actual raw values: how would you report out the main point(s) of this chart?
+
+**A3.**  It does appear that median income has an impact on number of 911 overdose calls. Zips with higher median income clearly had lower calls then those of lower median income. I think this means that, in a general sense, areas that are more economically depleated are more likely to be infaltrated with drugs, people are more likely to use which results in more ODs. 
+
+I would report this out by looking at maybe one or two high income areas with low call rates and then look at 2 zips with low median income and high cals rates and talk about the differences between the two.
+
+Chatgpt:  I had to ask Chatgpt on how to make the scatter plot, after asking "what is the function that creates a scatterplot' I got the geom_point function. That worked, but then I didn't know how to label the points. I asked Chatgpt 'How to label points on a scatterplot in R' and it showed me how to use geom_text to use aes to label my points. At first they were overlapping and I asled Chatgpt how to change that, and it said to just trial and error the x and y nudge until they didn't, so thats what I did until I got it to where it is now. 
+
+```{r}
+pg_county_calls_per_zip <- pg_county %>%
+  group_by(zipcode) %>%
+  summarise(total_calls = n())
+```
+
+```{r}
+md <- get_acs(geography = "zcta",
+              variables = c(medincome = "B19013_001"),
+              state = "MD",
+              year = 2019)
+
+md <- md %>% 
+  rename(zipcode = GEOID)
+```
+
+```{r}
+pg_county_calls_per_zip_with_income <- pg_county_calls_per_zip %>% left_join(md, by='zipcode')
+```
+
+```{r}
+ggplot(pg_county_calls_per_zip_with_income, aes(x = estimate, y = total_calls)) +
+  geom_point() +
+  geom_text(aes(label = zipcode), nudge_y = 3, nudge_x = 3, size = 2) +
+  labs(title = "Higher Income areas less likely to overdose on Drugs",
+       x = "Median Income",
+       y = "Total Calls")
+```
+
+
+
