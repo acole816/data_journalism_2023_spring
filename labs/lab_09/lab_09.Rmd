@@ -87,7 +87,16 @@ md_votes_by_type <- read_csv("data/md_votes_by_type.csv")
 
 What do you think the story here is, and what would you want to know more about? Put the answer below along with the URL of your map.
 
-**A3.** 
+**A3.** https://datawrapper.dwcdn.net/9Omco/1/
+
+It seems maybe a lot of the drug overdose calls are located centrally in Montgomery County... so maybe those are the most popular dense places...? Which would make sense that the zips with the most people have the most OD calls. Also its the end of the lab and I want to submit on time so sorry this is a poor answer. 
 
 ```{r}
+montgomery_2022_overdoses <- read_csv("data/montgomery_2022_overdoses.csv")
+
+montgomery_2022_overdoses_with_zip <- montgomery_2022_overdoses %>%
+  group_by(zip) %>%
+  summarise(count = n())
+
+write_csv(montgomery_2022_overdoses_with_zip, "data/montgomery_2022_overdoses_with_zip.csv")
 ```
