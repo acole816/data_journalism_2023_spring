@@ -56,7 +56,7 @@ Simlar to `readr`, the `sf` library has functions to read geographic data. In th
 
 ### Task: Load data
 **Task** Run the following code to load data. Describe what you see in the answer space below. What columns exist in this data?
-**Answer** 
+**Answer** The new column here that we haven't worked with before is the 'geometry' column, which shows the shape and cooridnates of each house. 
 
 ```{r}
 md_zips <- st_read("data/md_zips/BNDY_ZIPCodes11Digit_MDP.shp")
@@ -70,7 +70,7 @@ Let's look at these zip codes We have 526 of them, according to this data.
 
 ### Task: Run code
 **Task** Run the following code. Describe the output in the space below: what kind of information does it contain?
-**Answer**
+**Answer** The geometry column is different then any column we've worked with before because there is a little search icon next to each observation. You can click on this search bar and it pulls up more data and coordinates for that row. 
 
 ```{r}
 View(md_zips)
@@ -80,7 +80,7 @@ But where in Maryland are these places? We can simply plot them on a longitude-l
 
 ### Task: Run code
 **Task** Run the following code. Describe the output in the space below.
-**Answer**
+**Answer** Makes a zipcode map of MD. 
 
 ```{r}
 md_zips %>%
@@ -103,10 +103,9 @@ Then load it:
 
 ### Task: Run code
 **Task** Run the following code. Describe the output in the space below.
-**Answer**
+**Answer** We have installed and loaded the 'tigirls' package.
 
 ```{r}
-# install.packages('tigris')
 library(tigris)
 ```
 
@@ -114,7 +113,7 @@ Now, let's use the counties() function from tigris to pull down a shapefile of a
 
 ### Task: Run code
 **Task** Run the following code. Describe the output in the space below.
-**Answer**
+**Answer** There is 18 different column, including the new geometry column we haven't seen before today. This is a database of all counties in the U.S. 
 ```{r}
 
 counties <- counties()
@@ -128,7 +127,7 @@ This county shapefile has all 3233 U.S. counties.  We only want the Maryland cou
 
 ### Task: Run code
 **Task** Run the following code. Describe the output in the space below.
-**Answer**
+**Answer** This is a data frame taken form the last one that just has MD counties, instead of all U.S. counties. 
 
 ```{r}
 md_counties <- counties %>%
@@ -140,7 +139,7 @@ To see what this looks like, let's plot it out with ggplot. We can pretty clearl
 
 ### Task: Run code
 **Task** Run the following code. Describe the output in the space below.
-**Answer**
+**Answer** This is a county map of MD. What is interesting about this map is it doesn't look like the Chesapeake Bay exist. This is because Eastern shore counties boundary lines extend all the way to the western side of the Chesapeake Bay. 
 
 ```{r}
 md_counties %>%
@@ -157,7 +156,7 @@ We're also going to change things up a bit to put the datasets we want to displa
 
 ### Task: Run code
 **Task** Run the following code. Describe the output in the space below.
-**Answer**
+**Answer** This is the zip code map on top of the county map for MD. It is important to have the order of our code have the least specific map/thing first, and increasingly become more specific as we go down.
 
 ```{r}
 ggplot() +
