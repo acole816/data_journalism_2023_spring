@@ -170,7 +170,7 @@ Let's dive back into zip codes and this time bring along data on notices of inte
 
 ### Task: Run code to load the foreclosure notice data.
 **Task** Run the following code. Describe the output in the space below.
-**Answer** 
+**Answer** This data frame shows us foreclosure data for zip codes in MD during the month of March in 2023. One thing I noticed is this data frame has 547 rows, whereas the MD Zips data frame only has 526 rows. This means their our zipcodes in this data frame outside of MD or that were typed in incorrectly. 
 
 ```{r}
 foreclosure_zip <- read_csv("data/Maryland_Notices_of_Intent_to_Foreclose_by_Zip_Code.csv") %>% clean_names()
@@ -183,7 +183,7 @@ Now we can join the zip codes to the foreclosure data.
 
 ### Task: Run code to join the precinct shapes with the voter turnout data
 **Task** Run the following code. Describe the output in the space below.
-**Answer**
+**Answer** This code is joining the MD zip code data frame with the foreclosure's in march '23 dataframe over the common column they share, zip codes. 
 
 ```{r}
 zip_codes_with_foreclosures <- md_zips %>% left_join(foreclosure_zip_march_2023, by=c("ZIPCODE1"="zip"))
@@ -193,7 +193,7 @@ Now we can use color to distinguish zip codes from each other. Let's use the num
 
 ### Task: Run code
 **Task** Run the following code. Describe the output in the space below.
-**Answer**
+**Answer** A map of MD showing areas with the highest numbers of foreclosure in March '23. 
 
 ```{r}
 ggplot() +
@@ -228,7 +228,7 @@ First, we'll go out and get the county foreclosure notices and population data f
 
 ### Task: Run code
 **Task** Run the following code. Describe the output in the space below.
-**Answer**
+**Answer** This codeblock gave us 2 in data frames. md_county_population and md_county_notices. md_county_population is showing the population per county in MD, with no MOE. The md_county_notice shows us the number of notices of foreclosure per zip code in MD in March '23. 
 
 ```{r}
 md_county_notices <- read_csv("data/Maryland_Foreclosure_Data_by_County.csv") %>% slice(1) %>% pivot_longer(cols=-c('Date', 'Type'), names_to='county', values_to = 'notices')
@@ -242,7 +242,7 @@ Ultimately, we're going to join this county table with population with foreclosu
 
 ### Task: Run code
 **Task** Run the following code. Describe the output in the space below.
-**Answer**
+**Answer** This is the same thing as the previous md_county_population data frame from the previous codeblock, but now we have the geometry column we had in the data frames from the beginning of the pre_lab. 
 
 ```{r}
 md_county_population <- get_acs(geography = "county",
@@ -261,7 +261,7 @@ But there's a problem.  The column in our population data that has county names 
 
 ### Task: Run code
 **Task** Run the following code. Describe the output in the space below.
-**Answer**
+**Answer** This shows us the 2 data frames we are working with, md_county_population and md_county_notice. 
 
 ```{r}
 md_county_population
@@ -275,7 +275,7 @@ Let's clean the population table. We're going to rename the "NAME" column to "co
 
 ### Task: Run code
 **Task** Run the following code. Describe the output in the space below.
-**Answer**
+**Answer** We are combining the md_county_population data with the md_county_notice data. Because we want to join on county names, but the column names are different and formatted differently in both data frames, we have to mutate one of the column names to be formatted in the same way as the other, so we can join the data frames together. 
 
 ```{r}
 md_county_population <- md_county_population %>%
@@ -291,7 +291,7 @@ Now we can join them!
 
 ### Task: Run code
 **Task** Run the following code. Describe the output in the space below.
-**Answer**
+**Answer** This codeblock is actually joining the 2 data frames together after we have mutated the column names and formatting of each to match each other. 
 
 ```{r}
 md_pop_with_foreclosures <- md_county_population %>%
@@ -303,7 +303,7 @@ Our final step before visualization, let's calculate the number of foreclosure n
 
 ### Task: Run code
 **Task** Run the following code. Describe the output in the space below.
-**Answer**
+**Answer** This code block is calculating the foreclosure notice rate in each county per 1000 people in its population. The data is then sorted from highest percent to lowest. 
 
 ```{r}
 md_pop_with_foreclosures <- md_county_population %>%
@@ -320,7 +320,7 @@ Okay, now let's visualize.  We're going to build a choropleth map, with the colo
 
 ### Task: Run code
 **Task** Run the following code. Describe the output in the space below.
-**Answer**
+**Answer** This is a county map that shows the percentage rate of forclosure notices in each county. The map is colered in different shades of blue. 
 
 ```{r}
 ggplot() +
@@ -331,7 +331,7 @@ This map is okay, but the color scale makes it hard to draw fine-grained differe
 
 ### Task: Run code
 **Task** Run the following code. Describe the output in the space below.
-**Answer**
+**Answer** The same map from the previous codeblock, but now ther is a new color scheme that shows the data in a more clear way then the blue map. 
 
 ```{r}
 ggplot() +
@@ -345,7 +345,7 @@ So let's change the color scale to a "log" scale, which will help us see those d
 
 ### Task: Run code
 **Task** Run the following code. Describe the output in the space below. What regional patterns do you see?
-**Answer**
+**Answer** Same map as the previous two, but again this map does a slightly better job then the previous using distinct colors that help the reader more clearly identify the different percentage levels on the map. 
 
 ```{r}
 ggplot() +
