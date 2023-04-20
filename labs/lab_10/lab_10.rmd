@@ -99,5 +99,13 @@ Finally, make a second county map showing the per capita rate. What counties sta
 
 ```{r}
 ev_2020_2023 <- read_csv("data/ev_2020_2023.csv")
+
+ev_2020_2023 <- ev_2020_2023 %>%
+  mutate(pct_change = ((march_2023 - july_2020)/july_2020)*100) %>%
+  rename(NAME = county)
+
+
+
+
 ```
 
