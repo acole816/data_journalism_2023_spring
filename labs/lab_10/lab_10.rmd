@@ -23,6 +23,7 @@ library(sf)
 library(janitor)
 library(tigris)
 library(ggplot2)
+library(dplyr)
 ```
 
 Let's explore Maryland elections, power outages and electric vehicle data and make some maps! 
@@ -59,12 +60,31 @@ ggplot(md_counties_votes) +
 
 **Q2.** Make a county-level map to explore the number of customers impacted by power outages in Maryland. Load the `county_outages_march2023.csv` file in the data folder and calculate a rate of customers with outages per 10,000 total customers for each county. Then join that dataframe to your Maryland counties dataframe you made in Q1 and create a county-level map of the results; you may need to tweak the fill scale to make the distinctions clearer. What's the potential story here? Given access to other months' outage data, what would your next steps be in reporting a story?
 
-**A2.** 
+**A2.** I think Talbot County having almost 1/5th of its customers experiences power outages in March is the biggest story. What happen? What there a big storm/accident that caused this? Given access to future months' outage data, I would first be looking at Talbot County data to make sure that number drops significantly in coming months. Then, I would be comparing each county percent of people effected by outages from month to month. Once I had 6 months worth of data, we could combine each counties data and look at the average number of people effected by outages in each county and ranking them. (Important to note 6 months of data is defintely not enough for a ful accurate picture but I hope you understand what I am trying to say.)
+
+
+Also: I used Chatgpt to figure out how to manually change the scale on this map for 'rate_of_outages'
+Question I asked: ggplot(md_counties_with_outages) +
+  geom_sf(aes(geometry = geometry, fill = rate_of_outages)) +
+  theme_minimal() +
+  scale_fill_viridis_b(option="magma",trans = "log").   In this example, how do I change the rate_of_outages scale to be different numbers.
+  
+This is when it showed me the 'breaks' method. Hope this is ok, without doing this the scale and colors looked really weird and didn't twll the story I wanted to tell about Talbot County.
 
 ```{r}
 county_outages_march2023 <- read_csv("data/county_outages_march2023.csv")
 
+county_outages_march2023 <- county_outages_march2023 %>%
+  mutate(rate_of_outages = (outage_customers/total_customers)*10000) %>%
+  rename(NAME = county)
 
+md_counties_with_outages <- merge(county_outages_march2023, just_md_counties, by="NAME")
+
+ggplot(md_counties_with_outages) +
+  geom_sf(aes(geometry = geometry, fill = rate_of_outages)) +
+  theme_minimal() +
+  scale_fill_viridis_b(option="magma",trans = "log", breaks = c(0, 100, 200, 400)) +
+  labs(title = "Almost a 1/5 of Talbot County experiences power outages in March")
 ```
 
 **Q3.** You've been assigned a story about the use of electric vehicles in Maryland and you want to make a map of the prevalence of electric vehicles in each county. Load the `ev_2020_2023.csv` file, which has the number of electric and hybrid vehicles per county from July 2020 and March 2023 and calculate a percentage change for each county (remember, that's `new-old/old`). Using the Maryland counties dataframe you made for Q1, make a county map showing the percentage change.What counties stand out to you? What questions do you have about the changes you're seeing?
@@ -78,5 +98,6 @@ Finally, make a second county map showing the per capita rate. What counties sta
 **A3.** 
 
 ```{r}
+ev_2020_2023 <- read_csv("data/ev_2020_2023.csv")
 ```
 
