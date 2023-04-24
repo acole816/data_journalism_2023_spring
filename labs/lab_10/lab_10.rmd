@@ -24,6 +24,7 @@ library(janitor)
 library(tigris)
 library(ggplot2)
 library(dplyr)
+library(tidycensus)
 ```
 
 Let's explore Maryland elections, power outages and electric vehicle data and make some maps! 
@@ -95,7 +96,11 @@ Then, calculate a per capita rate of electric & hybrid vehicles using the March 
 
 Finally, make a second county map showing the per capita rate. What counties stand out on this map? How is it different from the first one you made?
 
-**A3.** 
+**A3.** First I'd like to point out I don't think my first map looks good. I can't figure out how to change the colors for them to look right and to better flow into one another. 
+
+For map 1, Caroline County clearly sticks out because it has had such a a great change in the number of EV cars from 2020 to 2023. They have more then 5 times the amount of EV cars now then in 2020! Why is this the case? has Caroline County incentive having EV cars in some way? Is gas really, really expensive there? That makes me think, is there a correlation between gas prices in an area and the per capita number of EV cars?
+
+For map 2, Howard and Montgomery stand out for having a higher number of EV cars per capita in comparison to other counties. This map is different because it gives a better picture of what counties are supporting EV cars the most. Even if one city has a lot of EV cars, they may just have more people. Even if a county has a small amount of EV cars, it may just be they don't have as many people... showing the per capita rates helps paint a clearer picture. 
 
 ```{r}
 ev_2020_2023 <- read_csv("data/ev_2020_2023.csv")
@@ -104,8 +109,34 @@ ev_2020_2023 <- ev_2020_2023 %>%
   mutate(pct_change = ((march_2023 - july_2020)/july_2020)*100) %>%
   rename(NAME = county)
 
+md_counties_with_ev <- merge(ev_2020_2023, just_md_counties, by="NAME")
 
+ggplot(md_counties_with_ev) +
+  geom_sf(aes(geometry = geometry, fill = pct_change)) +
+  scale_fill_viridis_b(option = "B")
 
+md_county_population <- get_acs(geography = "county",
+              variables = c(population = "B01001_001"),
+              year = 2021,
+              state = "MD")
 
+md_county_population <- md_county_population %>%
+  mutate(NAME = str_to_title(str_remove_all(NAME,", Maryland"))) %>%
+  mutate(NAME = str_to_title(str_remove_all(NAME," County"))) %>%
+  mutate(NAME = str_trim(NAME, side="both")) %>%
+  rename(population = estimate) %>%
+  select(NAME, population)
+
+md_county_geom_pop <- md_county_population %>%
+  left_join(md_counties, by='NAME')
+
+md_pop_with_ev <- md_county_geom_pop %>%
+  left_join(ev_2020_2023, by='NAME') %>%
+  mutate(per_capita = march_2023/population)
+
+ggplot(md_pop_with_ev) +
+  geom_sf(aes(geometry = geometry, fill = per_capita)) +
+  scale_fill_viridis_b(option = "C")
+  
 ```
 
