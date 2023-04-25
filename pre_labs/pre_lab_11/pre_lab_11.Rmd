@@ -142,7 +142,7 @@ Let's say we are interested in 2023, so all we need to do now is to store that f
 
 ### Task 5: Save one table from the HTML source
 **Task** Run the following code in the gray-colored codeblock below to extract all tables in the HTML and save it as a dataframe. What do you notice about the columns?
-**Answer** 
+**Answer** The column names are the same as those on the actual website. "Date" and "News Release/News Item". Also the date column is listed as a character column when it is clearly a date. That means we need to clean up the data ourselves. 
 
 ```{r}
 # Read in all html from table, store all tables on page as nested list of dataframes.
@@ -166,7 +166,7 @@ Then let's use slice() to remove the last row -- row number 25 -- which contains
 
 ### Task 6: Clean up the data
 **Task** Run the following code to extract the table we want, clean up the names and change the date column to an actual date. Look at the dataframe; what other information about these releases might you want to add?
-**Answer** 
+**Answer** Maybe they could be broken down by category and or location. 
 
 ```{r}
 # Read in all html from table, get the HTML table.
