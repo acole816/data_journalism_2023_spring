@@ -63,7 +63,13 @@ press_release_url <- "https://www.opd.state.md.us/press-releases"
 pr_results <- press_release_url %>%
   read_html()
 
-pr_results %>% html_elements('li') %>% html_text()
+releases_df <- pr_results %>% html_elements('p.font_8') %>% html_text() %>% as_tibble() %>% separate(value, c('date', 'title'), sep=":") %>% drop_na(title) %>% mutate(date = mdy(date))
+
+police_occurences <- grep("police", releases_df$title, ignore.case = TRUE)
+amount_police <- length(police_occurences)
+most_recent_police_occurence <- max(releases_df$date[police_occurences])
+
+
 ```
 
 **Q3** Sen. Ben Cardin, D-Maryland, has posted hundreds of press releases at https://www.cardin.senate.gov/?post_type=press-releases. It would be great to have all of them in a dataframe that has the following columns: date, title and url.
