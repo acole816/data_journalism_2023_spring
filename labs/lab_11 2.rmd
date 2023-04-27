@@ -68,8 +68,6 @@ releases_df <- pr_results %>% html_elements('p.font_8') %>% html_text() %>% as_t
 police_occurences <- grep("police", releases_df$title, ignore.case = TRUE)
 amount_police <- length(police_occurences)
 most_recent_police_occurence <- max(releases_df$date[police_occurences])
-
-
 ```
 
 **Q3** Sen. Ben Cardin, D-Maryland, has posted hundreds of press releases at https://www.cardin.senate.gov/?post_type=press-releases. It would be great to have all of them in a dataframe that has the following columns: date, title and url.
@@ -85,4 +83,11 @@ Finally, tell me what questions you could ask of this data. Be creative.
 **A3** 
 
 ```{r}
+cardin_release <- "https://www.cardin.senate.gov/?post_type=press-releases"
+
+cardin_results <- cardin_release %>%
+  read_html()
+
+cardin_date <- cardin_results %>% html_elements('h5.customBlog_item__date') %>% html_text() %>% as_tibble()
+cardin_url <- cardin_results %>% html_elements('a.href') %>% html_text() %>% as_tibble()
 ```
