@@ -1,0 +1,142 @@
+---
+title: "lab_10"
+author: "Derek Willis"
+date: "2023-04-19"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## You will need
+
+* Our usual libraries, plus some of the map-specific ones from the pre_lab. You'll also be fetching Census data in Q3. Read the questions carefully!
+
+## Load libraries and establish settings
+
+**Task** Create a codeblock and load appropriate packages and settings for this lab.
+
+```{r}
+library(tidyverse)
+library(sf)
+library(janitor)
+library(tigris)
+library(ggplot2)
+library(dplyr)
+library(tidycensus)
+```
+
+Let's explore Maryland elections, power outages and electric vehicle data and make some maps! 
+
+## Questions 
+
+**Q1.** Maryland voters made history in November by electing the state's first two African-American statewide office holders: Wes Moore as governor and Anthony Brown as attorney general. You want to compare the two's electoral performances. Using the `md_statewide_county.csv` file in the data folder, calculate the total number of votes for both the governor's race and the attorney general's race, then percentages for both Moore and Brown _based on the total of their respective contests_. Then calculate the difference between their percentages.
+
+Get the geometry for Maryland's counties using tigris and, joining that data frame to your results data frame, make a county-level map of the differences between Moore and Brown's percentages. What is the story here, and what is the county with the most interesting results?
+
+**A1.** I think PG County and Baltimore City casting more votes for AG Brown then Gov. Moore is the county with the most interesting results. They were the only two counties that casted more votes for Brown then Moore, which is interesting because they were both democratic candidates. Additionally, in both counties, Moore still received the vast majority of votes casted, so it is interesting there were still more people, as a percentage, that voted for Brown then Moore. 
+
+```{r}
+md_county <- read_csv("data/md_statewide_county.csv")
+
+md_county <- md_county %>%
+  mutate(gov_total = Cox + Moore + Lashar + Wallace + Harding + Sefcik + GovWritein) %>%
+  mutate(moore_pct = (Moore/gov_total)*100) %>%
+  mutate(ag_total = Peroutka + Brown + AgWritein) %>%
+  mutate(brown_pct = (Brown/ag_total)*100) %>%
+  mutate(diff_pct = moore_pct - brown_pct)
+
+counties <- counties()
+just_md_counties <- counties %>%
+  filter(STATEFP == "24")
+
+md_counties_votes <- merge(just_md_counties, md_county)
+
+ggplot(md_counties_votes) +
+  geom_sf(aes(fill = diff_pct)) +
+  scale_fill_gradient2(low = "blue", mid = "pink", high = "red") +
+  labs(title = "PG County & Baltimore City cast more votes for Brown then Moore")
+```
+
+**Q2.** Make a county-level map to explore the number of customers impacted by power outages in Maryland. Load the `county_outages_march2023.csv` file in the data folder and calculate a rate of customers with outages per 10,000 total customers for each county. Then join that dataframe to your Maryland counties dataframe you made in Q1 and create a county-level map of the results; you may need to tweak the fill scale to make the distinctions clearer. What's the potential story here? Given access to other months' outage data, what would your next steps be in reporting a story?
+
+**A2.** I think Talbot County having almost 1/5th of its customers experiences power outages in March is the biggest story. What happen? What there a big storm/accident that caused this? Given access to future months' outage data, I would first be looking at Talbot County data to make sure that number drops significantly in coming months. Then, I would be comparing each county percent of people effected by outages from month to month. Once I had 6 months worth of data, we could combine each counties data and look at the average number of people effected by outages in each county and ranking them. (Important to note 6 months of data is defintely not enough for a ful accurate picture but I hope you understand what I am trying to say.)
+
+
+Also: I used Chatgpt to figure out how to manually change the scale on this map for 'rate_of_outages'
+Question I asked: ggplot(md_counties_with_outages) +
+  geom_sf(aes(geometry = geometry, fill = rate_of_outages)) +
+  theme_minimal() +
+  scale_fill_viridis_b(option="magma",trans = "log").   In this example, how do I change the rate_of_outages scale to be different numbers.
+  
+This is when it showed me the 'breaks' method. Hope this is ok, without doing this the scale and colors looked really weird and didn't twll the story I wanted to tell about Talbot County.
+
+```{r}
+county_outages_march2023 <- read_csv("data/county_outages_march2023.csv")
+
+county_outages_march2023 <- county_outages_march2023 %>%
+  mutate(rate_of_outages = (outage_customers/total_customers)*10000) %>%
+  rename(NAME = county)
+
+md_counties_with_outages <- merge(county_outages_march2023, just_md_counties, by="NAME")
+
+ggplot(md_counties_with_outages) +
+  geom_sf(aes(geometry = geometry, fill = rate_of_outages)) +
+  theme_minimal() +
+  scale_fill_viridis_b(option="magma",trans = "log", breaks = c(0, 100, 200, 400)) +
+  labs(title = "Almost a 1/5 of Talbot County experiences power outages in March")
+```
+
+**Q3.** You've been assigned a story about the use of electric vehicles in Maryland and you want to make a map of the prevalence of electric vehicles in each county. Load the `ev_2020_2023.csv` file, which has the number of electric and hybrid vehicles per county from July 2020 and March 2023 and calculate a percentage change for each county (remember, that's `new-old/old`). Using the Maryland counties dataframe you made for Q1, make a county map showing the percentage change.What counties stand out to you? What questions do you have about the changes you're seeing?
+
+Next, use tidycensus to retrieve county population data for Maryland from 2021 (you did this in the pre_lab) and join it to your vehicles dataframe. HINT: you may not need to join it on the county name, and you should already have the geometry!
+
+Then, calculate a per capita rate of electric & hybrid vehicles using the March 2023 figure and the population estimate. You will need to choose the "per capita" value.
+
+Finally, make a second county map showing the per capita rate. What counties stand out on this map? How is it different from the first one you made?
+
+**A3.** First I'd like to point out I don't think my first map looks good. I can't figure out how to change the colors for them to look right and to better flow into one another. 
+
+For map 1, Caroline County clearly sticks out because it has had such a a great change in the number of EV cars from 2020 to 2023. They have more then 5 times the amount of EV cars now then in 2020! Why is this the case? has Caroline County incentive having EV cars in some way? Is gas really, really expensive there? That makes me think, is there a correlation between gas prices in an area and the per capita number of EV cars?
+
+For map 2, Howard and Montgomery stand out for having a higher number of EV cars per capita in comparison to other counties. This map is different because it gives a better picture of what counties are supporting EV cars the most. Even if one city has a lot of EV cars, they may just have more people. Even if a county has a small amount of EV cars, it may just be they don't have as many people... showing the per capita rates helps paint a clearer picture. 
+
+```{r}
+ev_2020_2023 <- read_csv("data/ev_2020_2023.csv")
+
+ev_2020_2023 <- ev_2020_2023 %>%
+  mutate(pct_change = ((march_2023 - july_2020)/july_2020)*100) %>%
+  rename(NAME = county)
+
+md_counties_with_ev <- merge(ev_2020_2023, just_md_counties, by="NAME")
+
+ggplot(md_counties_with_ev) +
+  geom_sf(aes(geometry = geometry, fill = pct_change)) +
+  scale_fill_viridis_b(option = "B")
+
+md_county_population <- get_acs(geography = "county",
+              variables = c(population = "B01001_001"),
+              year = 2021,
+              state = "MD")
+
+md_county_population <- md_county_population %>%
+  mutate(NAME = str_to_title(str_remove_all(NAME,", Maryland"))) %>%
+  mutate(NAME = str_to_title(str_remove_all(NAME," County"))) %>%
+  mutate(NAME = str_trim(NAME, side="both")) %>%
+  rename(population = estimate) %>%
+  select(NAME, population)
+
+md_county_geom_pop <- md_county_population %>%
+  left_join(md_counties, by='NAME')
+
+md_pop_with_ev <- md_county_geom_pop %>%
+  left_join(ev_2020_2023, by='NAME') %>%
+  mutate(per_capita = march_2023/population)
+
+ggplot(md_pop_with_ev) +
+  geom_sf(aes(geometry = geometry, fill = per_capita)) +
+  scale_fill_viridis_b(option = "C")
+  
+```
+
