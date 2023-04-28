@@ -83,7 +83,7 @@ Finally, tell me what questions you could ask of this data. Be creative.
 
 In honestly I think my questions are horrednous. Maybe I am jsut brainfarting but I'm not really seeing a lot of interesting questions to ask of this data. By the action of putting it in a dataframe like this, I can only assume we would be doing so to look for some type of pattern in teh data, othewise there would be no point in putting it in a datframe.
 
-Mayb we would be interested in seeing how frequent releases come out, on what days of the week they come out more... but I don't really find these particularly interesting or creative. Sorry :()
+Maybe we would be interested in seeing how frequent releases come out, on what days of the week they come out more... but I don't really find these particularly interesting or creative. Sorry :(
 
 ```{r}
 cardin_release <- "https://www.cardin.senate.gov/?post_type=press-releases"
