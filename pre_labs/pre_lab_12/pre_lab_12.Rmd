@@ -38,7 +38,7 @@ Let's read in this data and examine it:
 
 ### Task 2: Read in data
 **Task** Run the following code and describe the dataframe it outputs.
-**Answer**
+**Answer** A data frame of the dates, title, url and text of all of Ben Cardin's press releases. 
 
 ```{r}
 releases <- read_rds("data/cardin_releases.rds")
@@ -86,7 +86,7 @@ If you are trying to create a list of unique words, R will treat differences in 
 
 ### Task 5: Trying out unique
 **Task** Run the following code and describe what the `unique` function does to the original list of words.
-**Answer**
+**Answer** It kept both "Dog" and "dog" because of the different capitalization but eliminated one of the "cat"s because they are the same capitalization. 
 
 ```{r}
 a_list_of_words <- c("Dog", "dog", "dog", "cat", "cat", ",")
@@ -97,7 +97,7 @@ Fortunately, this is a solved problem with tidytext, which has a function called
 
 ### Task 6: Trying out unnest_tokens
 **Task** Run the following code and describe the output of using the `unnest_tokens` function.
-**Answer**
+**Answer** It is taking all of the words in the 'text' column of the releases data frame and putting htme into individual rows in a new data frame with the column name 'word'.
 
 ```{r}
 unique_words <- releases %>% select(text) %>%
@@ -107,7 +107,7 @@ View(unique_words)
 
 ### Task 7: Make a column chart
 **Task** Run the following code and describe what the resulting graphic shows. Is it interesting?
-**Answer**
+**Answer** The graphic is showing how many times each word shwos up in our new 'word' data frame. It is someone interesting, although I tihnk it would be better to eliminate all of the prepositions like 'the', 'and', 'of' and so on to get more useful data. Also, I don't know what 'd' means... Maybe deriving from D as in Democrat used next to politicans/Cardin's name...?
 
 Now we can look at the top words in this dataset. Let's limit ourselves to making a plot of the top 25 words, and we'll use the function `count` to do the counting:
 
@@ -156,7 +156,7 @@ From there, we can get a simple word frequency by just grouping them together an
 
 ### Task 9: Using anti_join
 **Task** Run the following code and describe the results. Is it more interesting than before?
-**Answer**
+**Answer** This is defintely more interesting then before. We now elimated the meaningless words like 'the' and 'a' and are now looking at words that actually have weight to them and tell us more things about Cardin's releases
 
 ```{r}
 unique_words %>%
@@ -193,7 +193,7 @@ Then we can create top 10 lists for both of them and compare:
 
 ### Task 11: Create dataframes with the top 10 words in each year
 **Task** Run the following code and describe the results.
-**Answer**
+**Answer** We now have three different data frames like the one from task 9 broekn down by year. 
 
 ```{r}
 unique_words_2021 %>%
@@ -238,7 +238,7 @@ So this block is is going to do the following:
 
 ### Task 12: Create a dataframe with the top 10 two-word phrases for 2021
 **Task** Run the following code and describe the results.
-**Answer**
+**Answer** The results show the top 10 words used together in Cardin's releases pre 2022, filtering out all of the stop words. 
 
 ```{r}
 releases %>%
@@ -258,7 +258,7 @@ And we already have a different, more nuanced result. Health was among the top s
 
 ### Task 13: Create a dataframe with the top 10 two-word phrases for 2022
 **Task** Run the following code and describe the results.
-**Answer**
+**Answer** Same thing as task 12, but nown looking at everything pre 2023 oppose to pre 2022. 
 
 ```{r}
 releases %>%
@@ -278,7 +278,7 @@ And 2023?
 
 ### Task 14: Create a dataframe with the top 10 two-word phrases for 2023
 **Task** Run the following code and describe the results.
-**Answer**
+**Answer** Same thing as last 2 task, but now jsut looking at releases from 2023.
 
 ```{r}
 releases %>%
@@ -304,7 +304,7 @@ Another popular use of text analysis is to measure the sentiment of a word - whe
 
 ### Task 15: Load the bing lexicon and produce sentiments for our 2021-2023 unique words
 **Task** Run the following code and describe the results. Do any of the sentiments seem incorrect or counter-intuitive?
-**Answer**
+**Answer** This created a new data frame with a lsit of words and if they are positive or negative in nature. It looks like all the words are right from what I can see, but its all about the context in which they are being used. 'Cancer' fro example is listed as bad, but often times 'cancer' is spoken in the context of 'beating cancer' which is a positive thing. I'm not so sure how helpful this is because all of the sentiments seem very logically sound and anyone could look at these words individualy and assign positive or negative. Is this function looking at the context in which the words are most frequently used?
 
 ```{r}
 bing <- get_sentiments("bing")
