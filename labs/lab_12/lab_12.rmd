@@ -82,7 +82,7 @@ trigram_dataframe <- md_attorney_sanctions %>%
 
 **Q3.** Let's drop back down to more traditional text analysis - take the top trigram from Q2 and write code to see how many times it occurs in the text column in each fiscal year. What do you think the answer produced by your code suggests? What else could you do to try and clarify the most important reasons attorneys get sanctioned?
 
-**A3.** 
+**A3.** The count for "conduct involving dishonesty" continues to go up every year a little from 2012-2018 and then takes a big spike in 2019. Either one or two things are true because of this: 1.) This phrase/word wasn't that common and then all the sudden got way more used for one reason or another after 2018. 2.) Way more attorneys started commiting conduct related to dishonesty after 2018. If so, why? COVID started in 2020 so it can't be that... abd even if it was, why would attorneys start committing more dishonesty during a global pandemic? Maybe attorneys started getting watched by a closer eye after 2018, and some type of agency really started cracking down on misconduct involving attorneys. 
 
 ```{r}
 trigram_count <- md_attorney_sanctions %>%
