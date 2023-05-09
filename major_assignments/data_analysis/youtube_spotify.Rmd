@@ -1,0 +1,121 @@
+---
+title: "Data Anylsis Project"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(dplyr)
+library(janitor)
+```
+
+```{r}
+spotify_youtube <- read_csv("data_analysis/Spotify_Youtube.csv")
+```
+
+The dataset contains 28 columns and 20,718 rows. One thing we have to figure out for our project to answer our third question, "What album type makes up the top five most popular songs?" is how to define "popular". The dataset provides columns like iews, likes, comments and streams. Will/Should we just base it off views? likes? A comination of multiple?
+
+We also wern't sure what "danceability" meant and how it was defined. According to Tableau, danceability is "measured using a mixture of song features such as beat strength, tempo stability, and overall tempo. The value returned determines the ease with which a person could dance to a song over the course of the whole song."
+https://www.tableau.com/blog/danceability#:~:text=Danceability%20is%20measured%20using%20a,course%20of%20the%20whole%20song.
+
+We also wern't sure what instrumentalness meant and what the values for that colummn indicated. Instrumentalness is defined as "This value represents the amount of vocals in the song. The closer it is to 1.0, the more instrumental the song is." This means, when comparing the first two songs shown in our dataset, Feel Good Inc. is a more instrumental song in comparison to Rhinestone Eyes, because its instrumentalness value is closer to 1.
+
+
+```{r}
+clean_spotify_youtube <- spotify_youtube %>%
+clean_names()
+```
+
+```{r}
+new_spotify_youtube <- clean_spotify_youtube %>%
+  na.omit(datacollected) 
+```
+
+### Question 1
+
+**Question text** [Is there a difference in listenership between faster tempo and lower tempo songs?]
+* **Analysis summary**: [It looks like there are a lot more songs above the average tempo in the dataframe — 120.6 BPM.I also noticed there's a concentration of more streams near the average and around a tempo of 175 BPM.  ]
+
+```{r}
+new_spotify_youtube %>%
+summarize(mean(tempo))
+```
+
+```{r}
+high_tempo <- new_spotify_youtube %>%
+  filter(tempo > 120.6072)
+
+ggplot(data = high_tempo) + 
+  geom_point(mapping = aes(x = stream, y = tempo))
+```
+
+```{r}
+low_tempo <- new_spotify_youtube %>%
+filter(tempo < 120.6072 )
+
+ggplot(data = low_tempo) + 
+  geom_point(mapping = aes(x = stream, y = tempo))
+```
+
+
+### Question 2
+
+* **Question text**:[Is there correlation between danceability of songs and their number of streams? 
+* **Analysis summary**: [Songs with danceability above .5 appear to have amassed more streams.]
+
+```{r}
+ ggplot(data = new_spotify_youtube) + 
+  geom_point(mapping = aes(x = stream, y = danceability))
+```
+
+
+### Question 3
+
+* **Question text**: [What album type makes up the top most popular songs?]
+* **Analysis summary**: [In this question we made a data frame that shows the top 20 most streamed songs, and then we counted the 'album_type' responses for the top 20 most streamed songs. Then, we wanted to look at the album_type values for the entire data frame, look at the percentage that they appear, and compare the two. In the entire data frame, 'album' made up roughly 72%, while it made up 90% of the top 20. Wehn we switch it to the top 50, it still is at 88%. It appears the most popular songs come from album's rather then singles.]
+
+```{r}
+top_20_stream <- new_spotify_youtube %>%
+  arrange(desc(stream)) %>%
+  head(20)
+
+count_album_type <- top_20_stream %>%
+  count(album_type)
+
+count_album_type_all <- new_spotify_youtube %>%
+  count(album_type)
+
+percent_album_type_all <- count_album_type_all %>%
+  mutate(percent = n / sum(n) * 100)
+```
+
+
+
+### Question 4
+
+* **Question text**: [Do instrumental tracks have a higher or lower average tempo than vocal tracks?]
+* **Analysis summary**: [The problem we've run into with this question is we are unable to figure out what tracks are considered instrumental. Filtering for instrumentalness value equals 1 only shows us 'White Noise for Babies', which we are not trying to look at. Maybe we have to reframe our question to jsut look at songs that are 'more instrumental' and derive some value for that to compare the two. For example, we could find the average instrumentalness value of the entire data frame and then compare the average tempo bewtween those two. Let us know if this is a good solution of is we should change the question completley. ]
+
+```{r}
+instrumental_tracks <- new_spotify_youtube %>%
+  filter(instrumentalness == 1)
+
+# ??
+```
+
+
+### Question 5
+
+* **Question text**: [What’s the danceability score of songs with high speechiness?]
+* **Analysis summary**: [In this question, we first made a new data frame with 20 songs with the highest speechiness value. Then, we calculated the average danceability score of that top 20, as well as the average danceability score of the entire data frame in order to compare the 2. What we found is that the average danceability score for the top 20 highest speechiness songs was .04 higher then the overall average.]
+
+```{r}
+top_20_speechiness <- new_spotify_youtube %>%
+  arrange(desc(speechiness)) %>%
+  head(20)
+
+avg_danceability_top_20 <- mean(top_20_speechiness$danceability)
+
+avg_danceability_all <- mean(new_spotify_youtube$danceability)
+```
+
