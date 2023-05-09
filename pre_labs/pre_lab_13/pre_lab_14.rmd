@@ -27,7 +27,7 @@ First, let's load libraries.  We're going to load janitor, the tidyverse and a n
 **Task** Run the following code in the gray-colored codeblock below to load the libraries we'll use.
 
 ```{r}
-install.packages('corrr')
+# install.packages('corrr')
 library(janitor)
 library(tidyverse)
 library(corrr)
@@ -44,7 +44,7 @@ Now let's load the data we'll be using. It has five fields:
 
 ### Task 2: Read in data
 **Task** Run the following code and describe the dataframe it outputs.
-**Answer**
+**Answer** Data frame showing states, who won the Presidential election in that state in 2016, Trump's voter share percentage in that state, percent of businesses in that state receiving PPE loans and 
 ```{r}
 
 reveal_data <- read_rds("data/reveal_data.rds")
