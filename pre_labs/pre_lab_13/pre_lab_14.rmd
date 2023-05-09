@@ -44,7 +44,7 @@ Now let's load the data we'll be using. It has five fields:
 
 ### Task 2: Read in data
 **Task** Run the following code and describe the dataframe it outputs.
-**Answer** Data frame showing states, who won the Presidential election in that state in 2016, Trump's voter share percentage in that state, percent of businesses in that state receiving PPE loans and 
+**Answer** Data frame showing states, who won the Presidential election in that state in 2016, Trump's voter share percentage in that state, percent of small businesses in that state receiving PPP loans and the amount of that loan per employee. 
 ```{r}
 
 reveal_data <- read_rds("data/reveal_data.rds")
@@ -61,7 +61,7 @@ Let's start by plotting them to get a sense of the pattern.
 
 ### Task 3: Plot data
 **Task** Run the following code. Describe the plot. What do you see?
-**Answer**
+**Answer** Scatter plot showing the mostly positive correlation between states that voted more for Trump in 2016 and states how received a higher percentage of PPP loans per business. 
 ```{r}
 
 reveal_data %>%
@@ -76,7 +76,7 @@ Let's test another variable, the average amount of money provided by PPP per sma
 
 ### Task 4: Plot data
 **Task** Run the following code. Describe the plot. What do you see?
-**Answer**
+**Answer** Scatter Plot showing slight positive correlation between states that voted more for Trump in 2016 and amount of PPP loan per employee in those states. 
 ```{r}
 
 reveal_data %>%
@@ -101,8 +101,7 @@ We can calculate r with a function from the corrr package called "correlate()". 
 
 ### Task 5: Correlate data
 **Task** Run the following code. Describe the table output. What do you see?
-**Answer**
-
+**Answer** Shows a positive correlation between Trump's voter percentage in a state and that states percentage of small businesss PPP loans received. Also shows a verey slight positive correlation between rump's voter percentage in a state and that states $ amount of a loan per employee. 
 ```{r}
 reveal_data %>%
   select(-state_name, -vote_2016) %>%
@@ -119,7 +118,7 @@ The relationship between businesses in a state receiving ppe and the state's Tru
 
 ### Task 6: Correlate data
 **Task** Run the following code. Describe the model output. What do you see?
-**Answer**
+**Answer** Shows us the p-value, which shows us if something is random chance or if things are actually correlated. This small p-value of 8.607e-05 is a very small p-value, indicating the relationship between Trump's voter percentage in a state and that states percentage of businesses that received PPP loans is not a random occurrence, but rather statistically valid. 
 ```{r}
 
 cor.test(reveal_data$pct_trump, reveal_data$businesses_receiving_ppe_pct)
@@ -132,7 +131,7 @@ Now let's test the other one, the relationship between the pct_trump and the ppe
 
 ### Task 7: Correlate data
 **Task** Run the following code. Describe the model output. What do you see?
-**Answer**
+**Answer** Higher p-value here (above .05) indicates that this is not statisitcally valid and very well could ahve happened by chance. 
 ```{r}
 
 cor.test(reveal_data$pct_trump, reveal_data$ppe_amount_per_employee)
@@ -158,7 +157,7 @@ We could just calculate the averages like we're used to doing.
 
 ### Task 8: Average data
 **Task** Run the following code. Describe the table. What do you see?
-**Answer**
+**Answer** Shows states that voted more for Trump and their mean PPP loan $ amount per employee and mean amount of businesses in that state that recieved a PPP loan amount. The same is shown for states that voted for Clinton. 
 ```{r}
 reveal_data %>%
   group_by(vote_2016) %>%
@@ -176,7 +175,7 @@ A t-test can help us answer that question.  It can tell us where there's a stati
 
 ### Task 9: Run t-test
 **Task** Run the following code. Describe the output. What do you see?
-**Answer**
+**Answer** 
 ```{r}
 t.test(ppe_amount_per_employee ~ vote_2016, data = reveal_data)
 ```
