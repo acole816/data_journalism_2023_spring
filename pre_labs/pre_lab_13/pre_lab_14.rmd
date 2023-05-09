@@ -175,7 +175,7 @@ A t-test can help us answer that question.  It can tell us where there's a stati
 
 ### Task 9: Run t-test
 **Task** Run the following code. Describe the output. What do you see?
-**Answer** 
+**Answer** Shows us the p-value between the mean amount per employee for states Clinton won and the same for states Trump won. Because the p-value is so high (.2295), we can infer that the difference between these 2 is jsut randonm chance and isn't statistically significant. 
 ```{r}
 t.test(ppe_amount_per_employee ~ vote_2016, data = reveal_data)
 ```
@@ -185,7 +185,7 @@ Let's try the percentage of businesses getting ppp loans.
 
 ### Task 10: Run t-test
 **Task** Run the following code. Describe the output. What do you see?
-**Answer**
+**Answer** Same things as task 9, but now we are looking at the correlation between states that voted for Trump and the percentage of that state's small businesses who received PPP loans, as well as states that voted for Clinton. Here, we have a much lower p-value (.002643) which indicates this correlation is statistically significant. This can also be seen in the small range of the 95% confidence interval. 
 ```{r}
 t.test(businesses_receiving_ppe_pct ~ vote_2016, data = reveal_data)
 ```
