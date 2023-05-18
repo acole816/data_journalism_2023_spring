@@ -3,14 +3,18 @@ title: "Data Anylsis Project"
 output: html_notebook
 ---
 
+We analyzed the relationship of the number of streams of almost 2000 songs and their correlation to characteristics such as tempo and danceability. We found there was no relationship between the number of streams and quantifiable characteristics of songs in our data set.
+
+
 ```{r}
 library(tidyverse)
 library(dplyr)
 library(janitor)
+library(corrr)
 ```
 
 ```{r}
-spotify_youtube <- read_csv("data_analysis/Spotify_Youtube.csv")
+spotify_youtube <- read_csv("Spotify_Youtube.csv")
 ```
 
 The dataset contains 28 columns and 20,718 rows. One thing we have to figure out for our project to answer our third question, "What album type makes up the top five most popular songs?" is how to define "popular". The dataset provides columns like iews, likes, comments and streams. Will/Should we just base it off views? likes? A comination of multiple?
@@ -20,6 +24,9 @@ https://www.tableau.com/blog/danceability#:~:text=Danceability%20is%20measured%2
 
 We also wern't sure what instrumentalness meant and what the values for that colummn indicated. Instrumentalness is defined as "This value represents the amount of vocals in the song. The closer it is to 1.0, the more instrumental the song is." This means, when comparing the first two songs shown in our dataset, Feel Good Inc. is a more instrumental song in comparison to Rhinestone Eyes, because its instrumentalness value is closer to 1.
 
+When we initially came up with questions related to the characteristics of songs and their popularity, we thought we would crack a code that would tell us exactly how a song’s production lead to it becoming a major hit — but we thought wrong. 
+
+There was no secret recipe in sight when we coded for correlation, but maybe that’s the point —  maybe the making of a hit song is pure luck.
 
 ```{r}
 clean_spotify_youtube <- spotify_youtube %>%
@@ -31,16 +38,16 @@ new_spotify_youtube <- clean_spotify_youtube %>%
   na.omit(datacollected) 
 ```
 
+For Q1+Q2: filter for outliars and figure out correlation using library(corrr)
 ### Question 1
 
 **Question text** [Is there a difference in listenership between faster tempo and lower tempo songs?]
-* **Analysis summary**: [It looks like there are a lot more songs above the average tempo in the dataframe — 120.6 BPM.I also noticed there's a concentration of more streams near the average and around a tempo of 175 BPM.  ]
+* **Analysis summary**: [It looks like there are a lot more songs above the average tempo in the dataframe — 120.6 BPM.I also noticed there's a concentration of more streams near the average and around a tempo of 175 BPM. There are 17 songs with unusually low tempos (equal to zero), after filtering them more than half of them were various white noise and sleep music tracks. There were two songs with unusually high tempo (above 225), I noticed that they had a low number of streams. It turns out there is no relationship or correlation between tempo and the number of streams or listenership of a track according to the data.  ]
 
 ```{r}
 new_spotify_youtube %>%
 summarize(mean(tempo))
 ```
-
 ```{r}
 high_tempo <- new_spotify_youtube %>%
   filter(tempo > 120.6072)
@@ -56,23 +63,59 @@ filter(tempo < 120.6072 )
 ggplot(data = low_tempo) + 
   geom_point(mapping = aes(x = stream, y = tempo))
 ```
+#filtering for outliers
 
+```{r}
+low_tempo_outlier <- low_tempo %>%
+filter(tempo < 10 )
+```
+
+```{r}
+high_tempo_outlier <- high_tempo %>%
+  filter(tempo > 225)
+```
+
+#correlation!
+
+```{r}
+new_spotify_youtube %>%
+  select(-artist, -url_spotify, -track, -album, -album_type, -uri, -url_youtube, -title, -channel, -description, -licensed, -official_video) %>%
+  correlate() %>%
+  select(term, stream )
+```
 
 ### Question 2
 
 * **Question text**:[Is there correlation between danceability of songs and their number of streams? 
-* **Analysis summary**: [Songs with danceability above .5 appear to have amassed more streams.]
+* **Analysis summary**: [Songs with danceability above .5 appear to have amassed a lot of streams compared to those below. There were outlier tracks with extremely high number of streams (over three billion) and higher danceability. Even with the dot plot there is no correlation between a song's danceability and its number of streams.]
 
 ```{r}
  ggplot(data = new_spotify_youtube) + 
   geom_point(mapping = aes(x = stream, y = danceability))
 ```
+In addition to producing a scatter plot to help us visualize our data, our correlation calculations showed that not only danceability or tempo had zero relationship to number of streams — the specific questions we asked about, but also characteristics like energy, loudness and duration of a song had no relationship to number of streams.
 
+#filtering for outliers
+```{r}
+new_spotify_youtube %>%
+  filter(stream > 3e+09)
+```
+
+
+#correlation!
+```{r}
+new_spotify_youtube %>%
+  select(-artist, -url_spotify, -track, -album, -album_type, -uri, -url_youtube, -title, -channel, -description, -licensed, -official_video) %>%
+  correlate() %>%
+  select(term, stream )
+```
+
+There could certainly be other factors related to the popularity of a song, a publicist for one, but this kind of variable wasn’t available in our data set. 
 
 ### Question 3
 
-* **Question text**: [What album type makes up the top most popular songs?]
-* **Analysis summary**: [In this question we made a data frame that shows the top 20 most streamed songs, and then we counted the 'album_type' responses for the top 20 most streamed songs. Then, we wanted to look at the album_type values for the entire data frame, look at the percentage that they appear, and compare the two. In the entire data frame, 'album' made up roughly 72%, while it made up 90% of the top 20. Wehn we switch it to the top 50, it still is at 88%. It appears the most popular songs come from album's rather then singles.]
+* **Question text**: [What album type makes up the top most popular songs?] 
+* **Analysis summary**: [The top 20 most streamed songs are a part of albums with over 70 percent. Even when we expand the number of popular songs we're sampling from, most of them still appear to be a part of albums over compilations and singles.]
 
 ```{r}
 top_20_stream <- new_spotify_youtube %>%
@@ -89,26 +132,25 @@ percent_album_type_all <- count_album_type_all %>%
   mutate(percent = n / sum(n) * 100)
 ```
 
+Pros of this data included that we had very unique variables like danceability and energy that we didn’t have to calculate or make quantifiable ourselves. It gave us greater range in what we could measure and added to the variables we could measure for correlation. 
 
 
 ### Question 4
 
 * **Question text**: [Do instrumental tracks have a higher or lower average tempo than vocal tracks?]
-* **Analysis summary**: [The problem we've run into with this question is we are unable to figure out what tracks are considered instrumental. Filtering for instrumentalness value equals 1 only shows us 'White Noise for Babies', which we are not trying to look at. Maybe we have to reframe our question to jsut look at songs that are 'more instrumental' and derive some value for that to compare the two. For example, we could find the average instrumentalness value of the entire data frame and then compare the average tempo bewtween those two. Let us know if this is a good solution of is we should change the question completley. ]
+* **Analysis summary**: [Austin helped me realize this question is a bit harder to analyze than I thought. It's hard to narrow down what constitutes a completely instrumental track even with the data we have. We'll probably have to rework this. ]
 
 ```{r}
 instrumental_tracks <- new_spotify_youtube %>%
   filter(instrumentalness == 1)
-
-# ??
 ```
-
 
 ### Question 5
 
-* **Question text**: [What’s the danceability score of songs with high speechiness?]
-* **Analysis summary**: [In this question, we first made a new data frame with 20 songs with the highest speechiness value. Then, we calculated the average danceability score of that top 20, as well as the average danceability score of the entire data frame in order to compare the 2. What we found is that the average danceability score for the top 20 highest speechiness songs was .04 higher then the overall average.]
+Cons of the data set included that the variables are also so unique, we’re not sure if they could really be quantified in the first place. Measuring an artform is difficult in that variables we liked such as danceability could be seen as too subjective to measure. With a data set measuring music, these larger questions are bound to be asked. 
 
+* **Question text**: [What’s the danceability score of songs with high speechiness?]
+* **Analysis summary**: [Danceability was higher in songs with high speechiness. Instead of using the top 20 or the entire dataframe, maybe we should have maybe analyzed all the songs with above average speechiness so that we have a larger sample size.]
 ```{r}
 top_20_speechiness <- new_spotify_youtube %>%
   arrange(desc(speechiness)) %>%
@@ -119,3 +161,8 @@ avg_danceability_top_20 <- mean(top_20_speechiness$danceability)
 avg_danceability_all <- mean(new_spotify_youtube$danceability)
 ```
 
+In conclusion, we believe this database has shown us that although a database has a lot of information in it, it doesn't mean it will have the answers to all the questions you ask it. In this class, we’ve traditionally been working with specific datasets with set questions. Because of this, we know that the answers to our questions are always in the database we are using…
+
+For this project however, we started off not necessarily asking the wrong questions of the data, but we didn’t ask questions that got the most out of our data… Some of the questions we asked provided answers we weren't expecting, where we didn’t see the correlation between some of the variables we examined.
+
+Despite this, we believe we pulled some interesting information out of the database and believe it could still be useful for answering some other questions about popular songs and their many variables.
